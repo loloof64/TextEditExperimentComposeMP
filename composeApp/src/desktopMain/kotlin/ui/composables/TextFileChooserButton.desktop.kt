@@ -15,7 +15,7 @@ import javax.swing.SwingUtilities
 import javax.swing.filechooser.FileNameExtensionFilter
 
 @Composable
-actual fun ShowTextFileChooserButton(
+actual fun ShowSaveTextFileChooserButton(
     buttonIcon: @Composable () -> Unit,
     getContentToSave: () -> String,
     getSuggestedFilename: () -> String,
@@ -39,6 +39,15 @@ actual fun ShowTextFileChooserButton(
     }) {
         buttonIcon()
     }
+}
+
+@Composable
+actual fun ShowOpenTextFileChooserButton(
+    buttonIcon: @Composable () -> Unit,
+    onSuccess: (String) -> Unit,
+    onError: (Exception) -> Unit
+) {
+
 }
 
 private fun openSaveTextFileChooser(

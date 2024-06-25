@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import java.io.IOException
 
 @Composable
-actual fun ShowTextFileChooserButton(
+actual fun ShowSaveTextFileChooserButton(
     buttonIcon: @Composable () -> Unit,
     getContentToSave: () -> String,
     getSuggestedFilename: () -> String,
@@ -42,6 +42,42 @@ actual fun ShowTextFileChooserButton(
 
     IconButton(onClick = {
         launcher.launch(getSuggestedFilename())
+    }) {
+        buttonIcon()
+    }
+}
+
+@Composable
+actual fun ShowOpenTextFileChooserButton(
+    buttonIcon: @Composable () -> Unit,
+    onSuccess: (String) -> Unit,
+    onError: (Exception) -> Unit
+) {
+    val context = LocalContext.current
+
+    fun loadTextFile(uri: Uri) {
+        val contentResolver = context.contentResolver
+        try {
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                val content = inputStream.bufferedReader().use { it.readText() }
+                onSuccess(content)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            onError(e)
+        }
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let {
+            loadTextFile(it)
+        }
+    }
+
+    IconButton(onClick = {
+        launcher.launch(arrayOf("text/plain"))
     }) {
         buttonIcon()
     }

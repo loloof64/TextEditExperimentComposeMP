@@ -1,6 +1,7 @@
 package ui.screens
 
 import Save
+import Open
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -10,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import services.ShowTextFileChooserButton
+import services.ShowOpenTextFileChooserButton
+import services.ShowSaveTextFileChooserButton
+import texteditexperiment.composeapp.generated.resources.*
 import texteditexperiment.composeapp.generated.resources.Res
 import texteditexperiment.composeapp.generated.resources.save
 import texteditexperiment.composeapp.generated.resources.save_error
@@ -23,6 +26,8 @@ fun MainScreen() {
 
     val saveErrorString = stringResource(Res.string.save_error)
     val saveSuccessString = stringResource(Res.string.save_success)
+    val openErrorString = stringResource(Res.string.open_error)
+    val openSuccessString = stringResource(Res.string.open_success)
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -45,6 +50,20 @@ fun MainScreen() {
         }
     }
 
+    fun handleOpenSuccess(content: String) {
+        textContent = content
+        scope.launch {
+            snackbarHostState.showSnackbar(openSuccessString)
+        }
+    }
+
+    fun handleOpenError(error: Exception) {
+        error.printStackTrace()
+        scope.launch {
+            snackbarHostState.showSnackbar(openErrorString)
+        }
+    }
+
     fun getSuggestedSaveFilename(): String = saveFilename
 
     fun getContentToSave(): String = textContent
@@ -57,6 +76,8 @@ fun MainScreen() {
             getContentToSave = ::getContentToSave,
             onSaveSuccess = ::handleSaveSuccess,
             onSaveError = ::handleSaveError,
+            onOpenSuccess = ::handleOpenSuccess,
+            onOpenError = ::handleOpenError,
         )
     }) {
         Row(
@@ -74,6 +95,8 @@ private fun AppBar(
     getContentToSave: () -> String,
     onSaveSuccess: (String) -> Unit,
     onSaveError: (Exception) -> Unit,
+    onOpenSuccess: (String) -> Unit,
+    onOpenError: (Exception) -> Unit,
 ) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
@@ -84,7 +107,7 @@ private fun AppBar(
     ) {
         Text("Simple text editor")
         Spacer(modifier = Modifier.weight(1f))
-        ShowTextFileChooserButton(
+        ShowSaveTextFileChooserButton(
             buttonIcon = {
                 Icon(
                     modifier = Modifier.size(24.dp),
@@ -97,6 +120,16 @@ private fun AppBar(
             onSuccess = { onSaveSuccess(it) },
             onError = { onSaveError(it) },
         )
-
+        ShowOpenTextFileChooserButton(
+            buttonIcon = {
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    imageVector = Open,
+                    contentDescription = stringResource(Res.string.open)
+                )
+            },
+            onSuccess = { onOpenSuccess(it) },
+            onError = { onOpenError(it) },
+        )
     }
 }

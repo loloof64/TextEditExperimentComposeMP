@@ -4,4 +4,7 @@
     <string name="save_success">Archivo guardado.</string>
     <string name="save_error">No se pudo guardar el archivo.</string>
     <string name="save_dialog_title">Guardar archivo</string>
+    <string name="open">Abrir</string>
+    <string name="open_success">Archivo abierto.</string>
+    <string name="open_error">No se pudo abrir el archivo.</string>
 </resources>
