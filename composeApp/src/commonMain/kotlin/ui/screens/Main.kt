@@ -3,46 +3,56 @@ package ui.screens
 import Save
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import services.letUserSaveFile
+import services.ShowTextFileChooserButton
 import texteditexperiment.composeapp.generated.resources.Res
 import texteditexperiment.composeapp.generated.resources.save
-
-private data class SingleAppBarAction(val icon: ImageVector, val description: String, val action: () -> Unit)
+import texteditexperiment.composeapp.generated.resources.save_error
 
 @Composable
 fun MainScreen() {
     var textContent by rememberSaveable { mutableStateOf("") }
+    var saveFilename by rememberSaveable { mutableStateOf("example.txt") }
+
+    val saveErrorString = stringResource(Res.string.save_error)
+
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     fun updateTextContent(newValue: String) {
         textContent = newValue
     }
 
-    fun handleSaveSuccess() {
-
+    fun handleSaveSuccess(newFilename: String) {
+        saveFilename = newFilename
     }
 
     fun handleSaveError(error: Exception) {
-
+        error.printStackTrace()
+        scope.launch {
+            snackbarHostState.showSnackbar(saveErrorString)
+        }
     }
 
-    Scaffold(topBar = {
-        AppBar(onSaveRequest = {
-            letUserSaveFile(
-                contentToSave = textContent,
-                onSuccess = ::handleSaveSuccess,
-                onError = ::handleSaveError
-            )
-        })
+    fun getSuggestedSaveFilename(): String = saveFilename
+
+    fun getContentToSave(): String = textContent
+
+    Scaffold(snackbarHost = {
+        SnackbarHost(hostState = snackbarHostState)
+    }, topBar = {
+        AppBar(
+            getSuggestedSaveFileName = ::getSuggestedSaveFilename,
+            getContentToSave = ::getContentToSave,
+            onSaveSuccess = ::handleSaveSuccess,
+            onSaveError = ::handleSaveError,
+        )
     }) {
         Row(
             modifier = Modifier.padding(it), horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -55,12 +65,11 @@ fun MainScreen() {
 
 @Composable
 private fun AppBar(
-    onSaveRequest: () -> Unit = {},
+    getSuggestedSaveFileName: () -> String,
+    getContentToSave: () -> String,
+    onSaveSuccess: (String) -> Unit,
+    onSaveError: (Exception) -> Unit,
 ) {
-    val actions = listOf(
-        SingleAppBarAction(icon = Save, description = stringResource(Res.string.save), action = onSaveRequest)
-    )
-
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = MaterialTheme.colors.primary,
@@ -70,17 +79,19 @@ private fun AppBar(
     ) {
         Text("Simple text editor")
         Spacer(modifier = Modifier.weight(1f))
-        for (singleAction in actions) {
-            IconButton(
-                content = {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = singleAction.icon,
-                        contentDescription = singleAction.description
-                    )
-                },
-                onClick = singleAction.action
-            )
-        }
+        ShowTextFileChooserButton(
+            buttonIcon = {
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    imageVector = Save,
+                    contentDescription = stringResource(Res.string.save)
+                )
+            },
+            getSuggestedFilename = { getSuggestedSaveFileName() },
+            getContentToSave = { getContentToSave() },
+            onSuccess = { onSaveSuccess(it) },
+            onError = { onSaveError(it) },
+        )
+
     }
 }
