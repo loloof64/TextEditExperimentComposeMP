@@ -2,4 +2,5 @@
 <resources>
     <string name="save">Guardar</string>
     <string name="save_error">No se pudo guardar el archivo.</string>
+    <string name="save_dialog_title">Guardar archivo</string>
 </resources>

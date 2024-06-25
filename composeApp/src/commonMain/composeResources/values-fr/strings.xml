@@ -2,4 +2,5 @@
 <resources>
     <string name="save">Sauvegarder</string>
     <string name="save_error">Échec de sauvegarde du fichier.</string>
+    <string name="save_dialog_title">Sauvegarder le fichier</string>
 </resources>

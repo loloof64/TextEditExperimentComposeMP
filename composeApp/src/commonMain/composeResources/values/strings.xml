@@ -2,4 +2,5 @@
 <resources>
     <string name="save">Save</string>
     <string name="save_error">Failed to save file.</string>
+    <string name="save_dialog_title">Save file</string>
 </resources>
