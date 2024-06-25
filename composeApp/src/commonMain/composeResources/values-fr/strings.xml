@@ -7,4 +7,5 @@
     <string name="open">Ouvrir</string>
     <string name="open_success">Fichier ouvert.</string>
     <string name="open_error">Échec d'ouverture du fichier.</string>
+    <string name="open_dialog_title">Ouvrir un fichier</string>
 </resources>
