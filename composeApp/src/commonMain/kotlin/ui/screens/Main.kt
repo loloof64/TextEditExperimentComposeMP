@@ -14,6 +14,7 @@ import services.ShowTextFileChooserButton
 import texteditexperiment.composeapp.generated.resources.Res
 import texteditexperiment.composeapp.generated.resources.save
 import texteditexperiment.composeapp.generated.resources.save_error
+import texteditexperiment.composeapp.generated.resources.save_success
 
 @Composable
 fun MainScreen() {
@@ -21,6 +22,7 @@ fun MainScreen() {
     var saveFilename by rememberSaveable { mutableStateOf("example.txt") }
 
     val saveErrorString = stringResource(Res.string.save_error)
+    val saveSuccessString = stringResource(Res.string.save_success)
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -31,6 +33,9 @@ fun MainScreen() {
 
     fun handleSaveSuccess(newFilename: String) {
         saveFilename = newFilename
+        scope.launch {
+            snackbarHostState.showSnackbar(saveSuccessString)
+        }
     }
 
     fun handleSaveError(error: Exception) {

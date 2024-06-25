@@ -58,7 +58,7 @@ private fun openSaveTextFileChooser(
                 fileSelectionMode = JFileChooser.FILES_ONLY
                 dialogTitle = title
                 fileFilter = extFilter
-                selectedFile = java.io.File(currentPath, suggestedName)
+                selectedFile = File(currentPath, suggestedName)
             }
 
             val result = fileChooser.showSaveDialog(null)

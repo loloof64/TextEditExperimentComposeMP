@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="save">Guardar</string>
+    <string name="save_success">Archivo guardado.</string>
     <string name="save_error">No se pudo guardar el archivo.</string>
     <string name="save_dialog_title">Guardar archivo</string>
 </resources>
